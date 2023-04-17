@@ -39,7 +39,7 @@ defmodule BlockScoutWeb.ApiRouter do
     plug(RateLimit)
   end
 
-  alias BlockScoutWeb.Account.Api.V1.{AuthenticateController, TagsController, UserController}
+  alias BlockScoutWeb.Account.Api.V1.{AuthenticateController, EmailController, TagsController, UserController}
 
   scope "/account/v1", as: :account_v1 do
     pipe_through(:api)
@@ -49,6 +49,10 @@ defmodule BlockScoutWeb.ApiRouter do
     post("/authenticate", AuthenticateController, :authenticate_post)
 
     get("/get_csrf", UserController, :get_csrf)
+
+    scope "/email" do
+      post("/resend", EmailController, :resend_email)
+    end
 
     scope "/user" do
       get("/info", UserController, :info)

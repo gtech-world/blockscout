@@ -27,7 +27,10 @@ defmodule BlockScoutWeb.Account.AuthController do
   defp do_profile(%{} = user, conn),
     do: render(conn, :profile, user: user)
 
-  def callback(%{assigns: %{ueberauth_failure: _fails}} = conn, _params) do
+  def callback(%{assigns: %{ueberauth_failure: _fails} = assigns} = conn, _params) do
+    debug(conn, "conn")
+    debug(assigns, "assigns")
+
     conn
     |> put_flash(:error, "Failed to authenticate.")
     |> redirect(to: root())
@@ -35,12 +38,25 @@ defmodule BlockScoutWeb.Account.AuthController do
 
   def callback(%{assigns: %{ueberauth_auth: auth}} = conn, params) do
     case UserFromAuth.find_or_create(auth) do
+      {:ok, %{email_verified: false} = user} ->
+        CSRFProtection.get_csrf_token()
+
+        conn
+        |> put_session(:current_user, user)
+        |> put_flash(:info, gettext("Before continue to use My Account, you should verify your email address."))
+        |> redirect(to: root())
+
       {:ok, user} ->
         CSRFProtection.get_csrf_token()
 
         conn
         |> put_session(:current_user, user)
         |> redirect(to: redirect_path(params["path"]))
+
+      # {:error, :email_unverified} ->
+      #   conn
+      #   |> put_flash(:error, gettext "Before continue to use My Account, you should verify your email address.")
+      #   |> redirect(to: root())
 
       {:error, reason} ->
         conn
@@ -53,6 +69,14 @@ defmodule BlockScoutWeb.Account.AuthController do
     not_found(conn)
   end
 
+  defp debug(value, key) do
+    require Logger
+    Logger.configure(truncate: :infinity)
+    Logger.info(key)
+    Logger.info(Kernel.inspect(value, limit: :infinity, printable_limit: :infinity))
+    value
+  end
+
   # for importing in other controllers
   def authenticate!(conn) do
     current_user(conn) || redirect(conn, to: root())
@@ -60,13 +84,18 @@ defmodule BlockScoutWeb.Account.AuthController do
 
   def current_user(%{private: %{plug_session: %{"current_user" => _}}} = conn) do
     if Account.enabled?() do
-      get_session(conn, :current_user)
+      conn
+      |> get_session(:current_user)
+      |> check_email_verification()
     else
       nil
     end
   end
 
   def current_user(_), do: nil
+
+  defp check_email_verification(%{email_verified: true} = session), do: session
+  defp check_email_verification(_), do: nil
 
   defp root do
     ConfigHelper.network_path()

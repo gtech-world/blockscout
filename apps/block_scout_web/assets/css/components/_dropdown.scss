@@ -79,6 +79,21 @@ $dropdown-menu-item-hover-background: rgba($secondary, 0.1) !default;
     }
   }
 
+  &.warn {
+    &,
+    &:hover,
+    &:active {
+      padding-left: 10px;
+      // background-color: #fff !important;
+      cursor: default;
+      color: #333;
+      font-weight: 400;
+      background: bisque;
+      padding: 10px;
+      border-radius: 5px;
+    }
+  }
+
   &.division {
     border-top: 1px solid $base-border-color;
   }
