@@ -42,11 +42,11 @@ defmodule BlockScoutWeb.LayoutView do
   end
 
   def logo_text do
-    Keyword.get(application_config(), :logo_text) || nil
+    Keyword.get(application_config(), :logo_text) || "Green Chain Scan"
   end
 
   def subnetwork_title do
-    Keyword.get(application_config(), :subnetwork) || "Sokol"
+    Keyword.get(application_config(), :subnetwork) || "Green Chain"
   end
 
   def network_title do

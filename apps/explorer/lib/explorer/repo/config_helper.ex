@@ -36,7 +36,7 @@ defmodule Explorer.Repo.ConfigHelper do
 
   def get_api_db_pool_size(default_pool_size), do: String.to_integer(System.get_env("POOL_SIZE_API", default_pool_size))
 
-  def ssl_enabled?, do: String.equivalent?(System.get_env("ECTO_USE_SSL") || "true", "true")
+  def ssl_enabled?, do: String.equivalent?(System.get_env("ECTO_USE_SSL") || "false", "true")
 
   defp extract_parameters(empty) when empty == nil or empty == "", do: []
 

@@ -83,7 +83,7 @@ verification_max_libraries =
 config :block_scout_web,
   link_to_other_explorers: System.get_env("LINK_TO_OTHER_EXPLORERS") == "true",
   other_explorers: System.get_env("OTHER_EXPLORERS"),
-  other_networks: System.get_env("SUPPORTED_CHAINS"),
+  other_networks: System.get_env("SUPPORTED_CHAINS", "{}"),
   webapp_url: System.get_env("WEBAPP_URL"),
   api_url: System.get_env("API_URL"),
   apps_menu: if(System.get_env("APPS_MENU", "false") == "true", do: true, else: false),
@@ -205,8 +205,8 @@ healthy_blocks_period =
   |> :timer.minutes()
 
 config :explorer,
-  coin: System.get_env("COIN", nil) || System.get_env("EXCHANGE_RATES_COIN") || "ETH",
-  coin_name: System.get_env("COIN_NAME", nil) || System.get_env("EXCHANGE_RATES_COIN") || "ETH",
+  coin: System.get_env("COIN", "GTH") || System.get_env("EXCHANGE_RATES_COIN") || "ETH",
+  coin_name: System.get_env("COIN_NAME", "GTH") || System.get_env("EXCHANGE_RATES_COIN") || "ETH",
   allowed_evm_versions:
     System.get_env("ALLOWED_EVM_VERSIONS") ||
       "homestead,tangerineWhistle,spuriousDragon,byzantium,constantinople,petersburg,istanbul,berlin,london,default",
